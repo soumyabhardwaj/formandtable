@@ -16,11 +16,11 @@ import ConfirmDialog from "../../components/ConfirmDialog";
 
 const useStyles = makeStyles(theme => ({
     pageContent: {
-        margin: theme.spacing(5),
-        padding: theme.spacing(3)
+        margin: theme.spacing(2),
+        padding: theme.spacing(0.5)
     },
     searchInput: {
-        width: '75%'
+        width: '55%'
     },
     newButton: {
         position: 'absolute',
@@ -106,7 +106,7 @@ export default function Employees() {
             <PageHeader
                 title="New Employee"
                 subTitle="Form design with validation"
-                icon={<PeopleOutlineTwoToneIcon fontSize="large" />}
+                icon={<PeopleOutlineTwoToneIcon fontSize="medium" />}
             />
             <Paper className={classes.pageContent}>
 
@@ -124,6 +124,7 @@ export default function Employees() {
                     <Controls.Button
                         text="Add New"
                         variant="outlined"
+                    
                         startIcon={<AddIcon />}
                         className={classes.newButton}
                         onClick={() => { setOpenPopup(true); setRecordForEdit(null); }}
@@ -131,10 +132,11 @@ export default function Employees() {
                 </Toolbar>
                 <TblContainer>
                     <TblHead />
-                    <TableBody>
+                   {recordsAfterPagingAndSorting().length?(<TableBody>
                         {
                             recordsAfterPagingAndSorting().map(item =>
-                                (<TableRow key={item.id}>
+                                (
+                                <TableRow key={item.id}>
                                     <TableCell>{item.fullName}</TableCell>
                                     <TableCell>{item.email}</TableCell>
                                     <TableCell>{item.mobile}</TableCell>
@@ -161,8 +163,19 @@ export default function Employees() {
                                 </TableRow>)
                             )
                         }
-                    </TableBody>
-                </TblContainer>
+                    </TableBody>):
+                 
+                ( <TableBody>
+                     <TableRow >
+                      <TableCell colSpan={5} align="center">   
+                         Empty
+                         </TableCell>
+
+                    
+
+                      </TableRow>
+                 </TableBody>)}
+                 </TblContainer>
                 <TblPagination />
             </Paper>
             <Popup
