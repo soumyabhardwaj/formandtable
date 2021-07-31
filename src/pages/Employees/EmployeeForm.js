@@ -5,11 +5,12 @@ import { useForm, Form } from '../../components/useForm';
 
 
 import * as employeeService from "../../services/employeeService";
+import { ErrorSharp } from '@material-ui/icons';
 
 
 const genderItems = [
     { id: 'male', title: 'Male' },
-    { id: 'female', title: 'Female' },
+    { id: 'female', title: 'Female',},
     { id: 'other', title: 'Other' },
 ]
 
@@ -19,9 +20,9 @@ const initialFValues = {
     email: '',
     mobile: '',
     city: '',
-    gender: 'male',
+    gender: '',
     departmentId: '',
-    hireDate: new Date(),
+    hireDate: " ",
     isPermanent: false,
 }
 
@@ -29,15 +30,59 @@ export default function EmployeeForm(props) {
     const { addOrEdit, recordForEdit } = props
 
     const validate = (fieldValues = values) => {
+        debugger;
+        const n_patt = new RegExp(/^[A-Za-z ]+$/);
+        const m_patt = new RegExp(/^[0-9]+$/);
+        const e_patt = new RegExp(/^[a-z0-9_-]+(\.[a-z0-9_-]+)*@[a-z0-9_-]+([\.a-z0-9_-]+)*(\.[a-z]{2,4})$/);
+
         let temp = { ...errors }
-        if ('fullName' in fieldValues)
-            temp.fullName = fieldValues.fullName ? "" : "This field is required."
-        if ('email' in fieldValues)
-            temp.email = (/$^|.+@.+..+/).test(fieldValues.email) ? "" : "Email is not valid."
-        if ('mobile' in fieldValues)
-            temp.mobile =(/^[0-9\b+$]/).test(fieldValues.mobile) ? "" : "Not valid"
-        if ('departmentId' in fieldValues)
+        if ('fullName' in fieldValues) {
+            if (fieldValues.fullName === "") {
+                temp.fullName = "This field is required."
+            } else if (!n_patt.test(fieldValues.fullName)) {
+                temp.fullName = "Please use only a-z or A-Z."
+            } else {
+                temp.fullName = ""
+            }
+        }
+        if ('email' in fieldValues) {
+
+            if (fieldValues.email === "") {
+                temp.email = "This field is required."
+            } else if (!e_patt.test(fieldValues.email)) {
+                temp.email = "Email invalid. Please use correct email Eg: xyz@email.com"
+            } else {
+                temp.email = ""
+            }
+
+        }
+        if ('mobile' in fieldValues) {
+            if (fieldValues.mobile === "") {
+                temp.mobile = "This field is required."
+            } else if (!m_patt.test(fieldValues.mobile)) {
+                temp.mobile = "Please use only 0-9."
+            } else if (fieldValues.mobile.length > 10) {
+                temp.mobile = "Mobile no should not be greater then 10 characters."
+            }
+            else {
+                temp.mobile = ""
+            }
+        }
+        if ('city' in fieldValues) {
+            temp.city = fieldValues.city.length != 0 ? "" : "This field is required."
+        }
+        if ('departmentId' in fieldValues) {
             temp.departmentId = fieldValues.departmentId.length != 0 ? "" : "This field is required."
+        }
+        if ('gender' in fieldValues) {
+            
+            temp.gender = fieldValues.gender ?"": "This field is required."
+        }
+        if("hireDate" in fieldValues){
+            if(fieldValues.hireDate==""){
+                temp.hireDate="required"
+            }
+          }
         setErrors({
             ...temp
         })
@@ -54,7 +99,8 @@ export default function EmployeeForm(props) {
         handleInputChange,
         resetForm
     } = useForm(initialFValues, true, validate);
-
+    
+   
     const handleSubmit = e => {
         e.preventDefault()
         if (validate()) {
@@ -99,16 +145,25 @@ export default function EmployeeForm(props) {
                         name="city"
                         value={values.city}
                         onChange={handleInputChange}
+                        error={errors.city}
                     />
+                    
+
 
                 </Grid>
                 <Grid item xs={6}>
                     <Controls.RadioGroup
                         name="gender"
-                        label="Gender"
+                        label="Gender "
+                        
                         value={values.gender}
                         onChange={handleInputChange}
+                        
+                        
                         items={genderItems}
+                        error={errors.gender}
+                        
+
                     />
                     <Controls.Select
                         name="departmentId"
@@ -129,6 +184,7 @@ export default function EmployeeForm(props) {
                         label="Permanent Employee"
                         value={values.isPermanent}
                         onChange={handleInputChange}
+                        
                     />
 
                     <div>
